@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add Product</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Add Product</h1>
+
+<form method="POST">
+
+    <input type="text"
+           name="product_id"
+           placeholder="Product ID">
+
+    <input type="text"
+           name="name"
+           placeholder="Product Name">
+
+    <input type="text"
+           name="description"
+           placeholder="Description">
+
+    <input type="text"
+           name="category"
+           placeholder="Category">
+
+    <input type="number"
+           name="price"
+           placeholder="Price">
+
+    <input type="number"
+           name="stock"
+           placeholder="Stock">
+
+    <input type="text"
+           name="image_url"
+           placeholder="Image URL">
+
+    <button type="submit">
+        Add Product
+    </button>
+
+</form>
+
+<br>
+
+<a href="/">Back to Homepage</a>
+
+</div>
+
+</body>
+</html>

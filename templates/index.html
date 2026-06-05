@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ShopSphere</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>ShopSphere Products</h1>
+
+<a href="/add">Add Product</a>
+
+<hr>
+
+{% for product in products %}
+
+<div class="product-card">
+
+    <h2>{{ product.name }}</h2>
+
+    <p>{{ product.description }}</p>
+
+    <p><strong>Category:</strong> {{ product.category }}</p>
+
+    <p><strong>Price:</strong> ${{ product.price }}</p>
+
+    <img src="{{ product.image_url }}" width="250">
+
+    <br><br>
+
+    <a href="/product/{{ product.ProductID }}">
+        View
+    </a>
+
+    <a href="/edit/{{ product.ProductID }}">
+        Edit
+    </a>
+
+    <a href="/delete/{{ product.ProductID }}">
+        Delete
+    </a>
+
+    <p>
+    <strong>Category:</strong>
+
+    <a href="/category/{{ product.category }}">
+        {{ product.category }}
+    </a>
+    
+    {% if products %}
+
+    {% for product in products %}
+
+    ...
+
+    {% endfor %}
+
+{% else %}
+
+    <h2>No products found.</h2>
+
+{% endif %}
+</p>
+</div>
+
+{% endfor %}
+
+</div>
+
+</body>
+</html>

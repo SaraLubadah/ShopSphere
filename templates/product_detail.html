@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{ product.name }}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="product-card">
+
+    <h1>{{ product.name }}</h1>
+
+    <p>{{ product.description }}</p>
+
+    <p>
+        <strong>Category:</strong>
+        {{ product.category }}
+    </p>
+
+    <p>
+        <strong>Price:</strong>
+        ${{ product.price }}
+    </p>
+
+    <p>
+        <strong>Stock:</strong>
+        {{ product.stock }}
+    </p>
+
+    <p>
+        <strong>Average Rating:</strong>
+        {{ average_rating }}
+    </p>
+
+    <img src="{{ product.image_url }}" width="300">
+
+</div>
+
+<hr>
+
+<h2>Add Review</h2>
+
+<form method="POST"
+      action="/review/{{ product.ProductID }}">
+
+    <input type="text"
+           name="customer_name"
+           placeholder="Your Name">
+
+    <input type="number"
+           name="rating"
+           min="1"
+           max="5"
+           placeholder="Rating">
+
+    <textarea name="comment"
+              placeholder="Comment"></textarea>
+
+    <button type="submit">
+        Submit Review
+    </button>
+
+</form>
+
+<hr>
+
+<h2>Reviews</h2>
+
+{% if reviews %}
+
+    {% for review in reviews %}
+
+    <div class="review-box">
+
+        <p>
+            <strong>{{ review.customer_name }}</strong>
+        </p>
+
+        <p>Rating: {{ review.rating }}/5</p>
+
+        <p>{{ review.comment }}</p>
+
+        <p>{{ review.timestamp }}</p>
+
+    </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>No reviews yet.</p>
+
+{% endif %}
+
+<br>
+
+<a href="/">Back to Homepage</a>
+
+</div>
+
+</body>
+</html>
