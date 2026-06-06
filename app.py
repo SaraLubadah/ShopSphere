@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect
 from services.db import products_table, reviews_table
 from boto3.dynamodb.conditions import Key
-from datetime import datetime
+
 
 app = Flask(__name__)
 
@@ -9,18 +9,18 @@ app = Flask(__name__)
 
 
 
+# Home page
 @app.route('/')
 def home():
 
-    response = products_table.scan()
+    response = products_table.scan(
+        FilterExpression=Attr('is_deleted').ne(True)
+    )
 
-    products = [
-        product
-        for product in response['Items']
-        if not product.get('is_deleted', False)
-    ]
+    products = response['Items']
 
     return render_template('index.html', products=products)
+
 
 
 
@@ -66,8 +66,8 @@ def product_detail(product_id):
 
     product = response.get('Item')
 
-    if not product:
-        return "Product not found"
+    if not product or product.get('is_deleted', False):
+     return "Product not found"
 
     # Get reviews
     from boto3.dynamodb.conditions import Key
@@ -193,16 +193,11 @@ def edit_product(product_id):
 @app.route('/delete/<product_id>')
 def delete_product(product_id):
 
-    products_table.update_item(
-    Key={
-        'ProductID': product_id
-    },
-    UpdateExpression='SET is_deleted = :deleted',
-    ExpressionAttributeValues={
-        ':deleted': True
-    }
-)
-
+    products_table.delete_item(
+        Key={
+            'ProductID': product_id
+        }
+    )
     return "Product Deleted"
 
 
@@ -217,8 +212,10 @@ def filter_category(category):
         KeyConditionExpression=Key('category').eq(category)
     )
 
-    products = response['Items']
-
+    products = [
+    product for product in response['Items']
+    if not product.get('is_deleted', False)
+]
     return render_template(
         'index.html',
         products=products
