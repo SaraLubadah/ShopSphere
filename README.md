@@ -70,22 +70,20 @@ The project demonstrates CRUD operations, DynamoDB + Global Secondary Indexes (G
 
 \* Average product ratings
 
+\* dissplay the latest reviews first
+
 
 
 \## DynamoDB Features
 
 
+\* two tables ---> products and reviews
 
 \* NoSQL schema design
 
 \* Partition and sort keys
 
-\* Global Secondary Index (GSI)
-
-\* Query operations
-
-\* Scan operations
-
+\* Global Secondary Index (GSI) in the product table
 
 
 \---
@@ -184,7 +182,7 @@ ShopSphere/
 
 │   └── db.py
 
-├── templates/
+├── templates/index, addproducts, edit_products, product_detail
 
 ├── static/
 
