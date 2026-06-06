@@ -38,7 +38,9 @@ def add_product():
                 'category': request.form.get('category'),
                 'price': int(request.form.get('price')),
                 'stock': int(request.form.get('stock')),
-                'image_url': request.form.get('image_url')
+                'image_url': request.form.get('image_url'),
+                'rating_total': 0,
+                'review_count': 0
             }
         )
 
@@ -82,15 +84,12 @@ def product_detail(product_id):
 )
 
 
+       # Average rating
+    rating_total = product.get('rating_total', 0)
+    review_count = product.get('review_count', 0)
 
-
-
-
-    # Average rating
-    if reviews:
-        average_rating = sum(
-            int(review['rating']) for review in reviews
-        ) / len(reviews)
+    if review_count > 0:
+        average_rating = rating_total / review_count
     else:
         average_rating = 0
 
@@ -124,7 +123,17 @@ def add_review(product_id):
             'timestamp': datetime.now().isoformat()
         }
     )
-
+    products_table.update_item(
+    Key={'ProductID': product_id},
+    UpdateExpression="""
+        ADD rating_total :rating,
+            review_count :one
+    """,
+    ExpressionAttributeValues={
+        ':rating': rating,
+        ':one': 1
+    }
+)
     return redirect(f'/product/{product_id}')
 
 
