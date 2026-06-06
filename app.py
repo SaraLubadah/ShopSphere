@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request, redirect
 from services.db import products_table, reviews_table
 from boto3.dynamodb.conditions import Key
-
-
 app = Flask(__name__)
 
 
@@ -13,13 +11,12 @@ app = Flask(__name__)
 @app.route('/')
 def home():
 
-    response = products_table.scan(
-        FilterExpression=Attr('is_deleted').ne(True)
-    )
+    response = products_table.scan()
 
     products = response['Items']
 
     return render_template('index.html', products=products)
+
 
 
 
@@ -39,16 +36,13 @@ def add_product():
                 'category': request.form.get('category'),
                 'price': int(request.form.get('price')),
                 'stock': int(request.form.get('stock')),
-                'image_url': request.form.get('image_url'),
-                'rating_total': 0,
-                'review_count': 0
+                'image_url': request.form.get('image_url')
             }
         )
 
         return "Product Added Successfully"
 
     return render_template('addProducts.html')
-
 
 
 
@@ -66,8 +60,8 @@ def product_detail(product_id):
 
     product = response.get('Item')
 
-    if not product or product.get('is_deleted', False):
-     return "Product not found"
+    if not product:
+        return "Product not found"
 
     # Get reviews
     from boto3.dynamodb.conditions import Key
@@ -84,13 +78,11 @@ def product_detail(product_id):
     reverse=True
 )
 
-
-       # Average rating
-    rating_total = product.get('rating_total', 0)
-    review_count = product.get('review_count', 0)
-
-    if review_count > 0:
-        average_rating = rating_total / review_count
+    # Average rating
+    if reviews:
+        average_rating = sum(
+            int(review['rating']) for review in reviews
+        ) / len(reviews)
     else:
         average_rating = 0
 
@@ -101,11 +93,7 @@ def product_detail(product_id):
         average_rating=average_rating
     )
 
-
-
-
-
-
+    return redirect(f'/product/{product_id}')
 
 # Add review
 @app.route('/review/<product_id>', methods=['POST'])
@@ -124,22 +112,8 @@ def add_review(product_id):
             'timestamp': datetime.now().isoformat()
         }
     )
-    products_table.update_item(
-    Key={'ProductID': product_id},
-    UpdateExpression="""
-        ADD rating_total :rating,
-            review_count :one
-    """,
-    ExpressionAttributeValues={
-        ':rating': rating,
-        ':one': 1
-    }
-)
+
     return redirect(f'/product/{product_id}')
-
-
-
-
 
 # Edit product
 
@@ -187,8 +161,6 @@ def edit_product(product_id):
 
 
 
-
-
 # Delete product
 @app.route('/delete/<product_id>')
 def delete_product(product_id):
@@ -198,6 +170,7 @@ def delete_product(product_id):
             'ProductID': product_id
         }
     )
+
     return "Product Deleted"
 
 
@@ -212,17 +185,12 @@ def filter_category(category):
         KeyConditionExpression=Key('category').eq(category)
     )
 
-    products = [
-    product for product in response['Items']
-    if not product.get('is_deleted', False)
-]
+    products = response['Items']
+
     return render_template(
         'index.html',
         products=products
     )
-
-
-
 
 
 
