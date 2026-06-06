@@ -5,7 +5,12 @@ app = Flask(__name__)
 
 
 
-
+@app.route('/test')
+def test():
+    response = products_table.get_item(
+        Key={'ProductID': 'some-existing-id'}
+    )
+    return str(response)
 
 # Home page
 @app.route('/')
