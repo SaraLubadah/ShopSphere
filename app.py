@@ -9,17 +9,18 @@ app = Flask(__name__)
 
 
 
-# Home page
 @app.route('/')
 def home():
 
     response = products_table.scan()
 
-    products = response['Items']
+    products = [
+        product
+        for product in response['Items']
+        if not product.get('is_deleted', False)
+    ]
 
     return render_template('index.html', products=products)
-
-
 
 
 
