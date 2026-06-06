@@ -1,4 +1,7 @@
 import boto3
+from dotenv import load_dotenv
+
+load_dotenv()
 
 dynamodb = boto3.resource(
     'dynamodb',
