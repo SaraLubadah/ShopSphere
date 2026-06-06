@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect
 from services.db import products_table, reviews_table
 from boto3.dynamodb.conditions import Key
+from datetime import datetime
+
 app = Flask(__name__)
 
 
@@ -47,6 +49,7 @@ def add_product():
 
 
 
+
 # Product detail page
 @app.route('/product/<product_id>')
 def product_detail(product_id):
@@ -78,6 +81,11 @@ def product_detail(product_id):
     reverse=True
 )
 
+
+
+
+
+
     # Average rating
     if reviews:
         average_rating = sum(
@@ -93,7 +101,11 @@ def product_detail(product_id):
         average_rating=average_rating
     )
 
-    return redirect(f'/product/{product_id}')
+
+
+
+
+
 
 # Add review
 @app.route('/review/<product_id>', methods=['POST'])
@@ -114,6 +126,10 @@ def add_review(product_id):
     )
 
     return redirect(f'/product/{product_id}')
+
+
+
+
 
 # Edit product
 
@@ -161,15 +177,21 @@ def edit_product(product_id):
 
 
 
+
+
 # Delete product
 @app.route('/delete/<product_id>')
 def delete_product(product_id):
 
-    products_table.delete_item(
-        Key={
-            'ProductID': product_id
-        }
-    )
+    products_table.update_item(
+    Key={
+        'ProductID': product_id
+    },
+    UpdateExpression='SET is_deleted = :deleted',
+    ExpressionAttributeValues={
+        ':deleted': True
+    }
+)
 
     return "Product Deleted"
 
@@ -191,6 +213,9 @@ def filter_category(category):
         'index.html',
         products=products
     )
+
+
+
 
 
 
