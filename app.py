@@ -5,12 +5,7 @@ app = Flask(__name__)
 
 
 
-@app.route('/test')
-def test():
-    response = products_table.get_item(
-        Key={'ProductID': 'some-existing-id'}
-    )
-    return str(response)
+
 
 # Home page
 @app.route('/')
@@ -29,7 +24,9 @@ def home():
 # Add product page
 @app.route('/add', methods=['GET', 'POST'])
 def add_product():
+
     if request.method == 'POST':
+
         if not request.form['name']:
             return "Name required"
 
@@ -45,10 +42,9 @@ def add_product():
             }
         )
 
-        return "Product Added Successfully"
+        return render_template('success.html')
 
     return render_template('addProducts.html')
-
 
 
 
