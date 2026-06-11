@@ -187,6 +187,7 @@ ShopSphere/
 ├── static/
 
 │   └── style.css
+├── screenshots
 
 ```
 
